@@ -102,7 +102,7 @@
             <Font size="18.0" />
          </font>
       </Text>
-    <SplitPane dividerPositions="0.2505567928730512, 0.7505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.2505567928730512" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
         <AnchorPane>
           <children>
@@ -151,10 +151,10 @@
           <content>
             <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0">
               <children>
-                        <VBox prefHeight="549.0" prefWidth="626.0">
+                        <VBox prefHeight="634.0" prefWidth="830.0">
                            <children>
                       <Label alignment="CENTER" font="$x1" style="&#10;" text="Fila Local" textAlignment="CENTER" textFill="$x2" wrapText="false" />
-                              <TableView prefHeight="501.0" prefWidth="626.0">
+                              <TableView prefHeight="501.0" prefWidth="787.0">
                                 <columns>
                                   <TableColumn fx:id="colDiretorio" prefWidth="108.0" text="Diretorio" />
                                   <TableColumn fx:id="colNomeArquivo" prefWidth="127.0" text="Nome do Arquivo" />
@@ -171,11 +171,6 @@
             </AnchorPane>
           </content>
         </ScrollPane>
-        <AnchorPane>
-          <children>
-            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Transcrições" textAlignment="CENTER" textFill="$x2" wrapText="false" />
-          </children>
-        </AnchorPane>
       </items>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="1004.0" spacing="5.0" VBox.vgrow="NEVER">

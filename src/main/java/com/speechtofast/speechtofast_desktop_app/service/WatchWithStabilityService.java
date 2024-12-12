@@ -11,10 +11,15 @@ import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WatchWithStabilityService {
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	
     private static final long STABLE_DURATION_MS = 5000; // Tempo que considera o arquivo estável (5 segundos)
     private static final long CHECK_INTERVAL_MS = 1000; // Intervalo para verificar estabilidade (1 segundo)
 
@@ -29,7 +34,20 @@ public class WatchWithStabilityService {
 
     public void registerDirectory(Path dir) throws IOException {
         dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
-        System.out.println("Monitorando diretório: " + dir);
+        logger.info("Monitorando diretório: {}", dir);
+    }
+
+    public void registerDirectoryRecursively(Path startDir) throws IOException {
+        Files.walk(startDir)
+             .filter(Files::isDirectory)
+             .forEach(dir -> {
+                 try {
+                     registerDirectory(dir);
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+             });
+        logger.info("Registro recursivo completo para: {}", startDir);
     }
 
     private boolean isFileStable(Path file) throws IOException {
@@ -43,7 +61,7 @@ public class WatchWithStabilityService {
     }
 
     public void processEvents() {
-        System.out.println("Aguardando eventos...");
+    	logger.info("Aguardando eventos...");
         while (running) { // Verifica se o monitoramento deve continuar
             WatchKey key;
             try {
@@ -60,13 +78,24 @@ public class WatchWithStabilityService {
                 Path fileName = (Path) event.context();
                 Path dir = (Path) key.watchable();
                 Path filePath = dir.resolve(fileName);
+                
+                logger.info("Evento detectado: {} em {}", kind, filePath);
 
-                System.out.println("Evento detectado: " + kind + " em " + filePath);
-
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                if (Files.isDirectory(filePath) && kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                    try {
+                        System.out.println("Novo diretório detectado, registrando: " + filePath);
+                        registerDirectory(filePath); // Registrar o novo diretório
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (kind == StandardWatchEventKinds.ENTRY_CREATE || kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                     new Thread(() -> {
                         try {
-                            monitorStability(filePath);
+                            if (Files.isDirectory(filePath)) {
+                                logger.info("Evento detectado para diretório: {}", filePath);
+                            } else {
+                                monitorStability(filePath);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -86,7 +115,7 @@ public class WatchWithStabilityService {
             try {
                 Thread.sleep(CHECK_INTERVAL_MS);
                 if (isFileStable(filePath)) {
-                    System.out.println("O arquivo está estável: " + filePath);
+                    logger.info("O arquivo está estável: {}", filePath);
                     break;
                 }
             } catch (InterruptedException e) {
@@ -99,7 +128,7 @@ public class WatchWithStabilityService {
     public void startMonitoringInBackground(Path dirToMonitor) {
         new Thread(() -> {
             try {
-                registerDirectory(dirToMonitor);
+                registerDirectoryRecursively(dirToMonitor);
                 processEvents();
             } catch (IOException e) {
                 e.printStackTrace();

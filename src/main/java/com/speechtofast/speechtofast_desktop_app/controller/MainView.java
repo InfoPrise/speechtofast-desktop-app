@@ -4,8 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.speechtofast.speechtofast_desktop_app.dto.QueueItemDTO;
 import com.speechtofast.speechtofast_desktop_app.service.WatchWithStabilityService;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -28,6 +31,7 @@ import net.rgielen.fxweaver.core.FxmlView;
 @Service
 @FxmlView("mainView.fxml")
 public class MainView extends Controller {
+	
 	
 	@Autowired
 	WatchWithStabilityService watchWithStabilityService;
@@ -86,11 +90,20 @@ public class MainView extends Controller {
         saveDirectoriesButton.setOnAction(event -> saveDirectoriesToFile());
         
         startMonitor.setOnAction(event -> {
-        for (String directory : directoryList) {
-        	watchWithStabilityService.startMonitoringInBackground(Paths.get(directory));
-		}});
+        	if(startMonitor.isSelected()) {
+        	     for (String directory : directoryList) {
+        	        	watchWithStabilityService.startMonitoringInBackground(Paths.get(directory));
+        			}
+        	} else {
+        		watchWithStabilityService.stopMonitoring();
+        	}
+   });
         
-            
+        //TODO: Aplicar lógica condicional para consumir de arquivo de configuração.
+        String relativePath = ".";
+        Path absolutePath = Paths.get(relativePath).toAbsolutePath().normalize();
+        directoryList.add(absolutePath.toAbsolutePath().toString());
+        
         /*
         colDiretorio.setCellValueFactory(cellData -> cellData.getValue().getDiretorio());
         colNomeArquivo.setCellValueFactory(cellData -> cellData.getValue().getNomeArquivo());
