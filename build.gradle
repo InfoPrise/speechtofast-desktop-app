@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.6'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'org.openjfx.javafxplugin' version '0.0.13' // Plugin JavaFX opcional
 }
 
 group = 'com.speechtofast'
@@ -22,17 +23,30 @@ ext {
 }
 
 dependencies {
-	implementation 'org.springframework.shell:spring-shell-starter'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.shell:spring-shell-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.shell:spring-shell-starter:3.3.3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.3'
+	
+	
+	implementation 'org.openjfx:javafx-controls:21.0.1'
+	implementation 'org.openjfx:javafx-fxml:21.0.1'
+	
+	implementation 'net.rgielen:javafx-weaver:2.0.1'
+	implementation 'net.rgielen:javafx-weaver-spring:2.0.1'
+	implementation 'net.rgielen:javafx-weaver-spring-boot:2.0.1'
+	implementation 'net.rgielen:javafx-weaver-spring-boot-starter:2.0.1'		
 }
 
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
 	}
+}
+
+javafx {
+	version = "21.0.1" // Configura a versão do JavaFX
+	modules = [ 'javafx.controls', 'javafx.fxml' ] // Módulos usados
 }
 
 tasks.named('test') {
