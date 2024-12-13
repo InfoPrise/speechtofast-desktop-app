@@ -27,3 +27,8 @@ Uma app desktop para monitorar diretórios, transferir mídias de vídeo/audio p
 ### Banco de Dados Suportados
 
 - SQL Server - TODO
+
+## Authors
+
+- [@luisangelorjr](https://github.com/luisangelorjr)
+- [@InfoPrise](https://github.com/InfoPrise)
